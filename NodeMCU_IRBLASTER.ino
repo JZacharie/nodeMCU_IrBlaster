@@ -16,19 +16,22 @@ void callback(char* p_topic, byte* p_payload, unsigned int p_length) {
   
   // if recieved a correct topic message.
   if (String(MQTT_SEND_IR).equals(p_topic)) {
+    
     for(i=0; i<p_length; i++) { message_buff[i] = p_payload[i]; }
     message_buff[i] = '\0';
-    
+
     //Convert Payload to JSON Object
+    StaticJsonBuffer<1000> jsonBuffer; 
     JsonObject& root = jsonBuffer.parseObject(message_buff);
-    
+        
     if (!root.success())  {
       Serial.println("parseObject() failed");
+      DEBUG_PRINTLN(message_buff);  
     }else{
-      String CHAR_IR_RAW_DATA           = root["IR_RAW_DATA"].as<String>();
-      String CHAR_IR_PROTOCOL           = root["IR_PROTOCOL"].as<String>();
-      String CHAR_IR_RAW_DATA_LENGTH    = root["IR_RAW_DATA_LENGTH"].as<String>();
-      String STR_HEXCODE                = root["HEXCODE"].as<String>();
+      String CHAR_IR_RAW_DATA           = root["IR_DATA"].as<String>();
+      String CHAR_IR_PROTOCOL           = root["IR_P"].as<String>();
+      String CHAR_IR_RAW_DATA_LENGTH    = root["IR_L"].as<String>();
+      String STR_HEXCODE                = root["IR_HEX"].as<String>();
       int index=0;
       int secondindex=0;
       for(i=1; i<CHAR_IR_RAW_DATA_LENGTH.toInt(); i++) { //nombre d'element dans le tableau initial
@@ -37,6 +40,7 @@ void callback(char* p_topic, byte* p_payload, unsigned int p_length) {
           index=secondindex+1;
           IR_RAW_DATA[i-1]=temp.toInt()*USECPERTICK;
       }
+
       if (CHAR_IR_PROTOCOL=="UNKNOWN" || CHAR_IR_PROTOCOL=="SHARP" ||CHAR_IR_PROTOCOL=="JVC" ||CHAR_IR_PROTOCOL=="SANYO" ||CHAR_IR_PROTOCOL=="MITSUBISHI" ||CHAR_IR_PROTOCOL=="LG" ||CHAR_IR_PROTOCOL=="PANASONIC") {
          DEBUG_PRINTLN("USE RAW DATA to send");  
          irsend.sendRaw (IR_RAW_DATA,CHAR_IR_RAW_DATA_LENGTH.toInt(),38);
@@ -50,7 +54,7 @@ void callback(char* p_topic, byte* p_payload, unsigned int p_length) {
          uli_HEXCODE = strtoul(CHAR_HEXCODE,NULL,16);
          sendIRfromHEX(CHAR_IR_PROTOCOL);
       }
-      delay(1000);
+      delay(100);
     }
   }
 }
@@ -186,10 +190,12 @@ void loop() {
     
     int IR_GET_RAW_DATA_LENGTH=results.rawlen+1;
     String IR_GET_PROTOCOL=String(CHAR_GET_IR_PROTOCOL);
-    String JSONRAWDATA="{\"IR_RAW_DATA\":\""+ IR_GET_RAW_DATA +"\",\"IR_PROTOCOL\":\""+ IR_GET_PROTOCOL +"\",\"IR_RAW_DATA_LENGTH\":\""+ IR_GET_RAW_DATA_LENGTH +"\"  , \"HEXCODE\" : \""+ IR_GET_HEXCODE +"\" }";
-    JSONRAWDATA.toCharArray   (MQTT_PAYLOAD,   500);
-
+    String JSONRAWDATA="{\"IR_DATA\":\""+ IR_GET_RAW_DATA +"\",\"IR_P\":\""+ IR_GET_PROTOCOL +"\",\"IR_L\":\""+ IR_GET_RAW_DATA_LENGTH +"\" ,\"IR_HEX\":\""+ IR_GET_HEXCODE +"\" }";
+    DEBUG_PRINTLN(JSONRAWDATA);
+    DEBUG_PRINTLN(JSONRAWDATA.length());
+    JSONRAWDATA.toCharArray   (MQTT_PAYLOAD,   400);
     PublishIR();
+    
     delay(1000); //to Protect from Crash
     irrecv.resume();                            // Receive the next value
   }

@@ -10,7 +10,7 @@ decode_results results;
 char              MQTT_CLIENT_ID[7]                                 = {0};
 char              MQTT_RECEIVED_IR[STRUCT_CHAR_ARRAY_SIZE]          = {0};
 char              MQTT_SEND_IR[STRUCT_CHAR_ARRAY_SIZE]              = {0};
-char              MQTT_PAYLOAD[500]                                 = {0};
+char              MQTT_PAYLOAD[400]                                 = {0};
 
 // IR Needs
 int               bits;
@@ -21,7 +21,7 @@ char              CHAR_GET_IR_HEXCODE[STRUCT_CHAR_ARRAY_SIZE]       = {0}; //HEX
 String            IR_GET_HEXCODE;
 unsigned long     uli_HEXCODE;
 
-StaticJsonBuffer<600> jsonBuffer; 
+
 
 typedef struct { // Settings for MQTT
   char            mqttUser[STRUCT_CHAR_ARRAY_SIZE]                  = "";//{0};
@@ -228,6 +228,7 @@ void verifyFingerprint() {
 }
 
 void sendIRfromHEX(String CHAR_IR_PROTOCOL){
+  DEBUG_PRINTLN(uli_HEXCODE); 
   if (CHAR_IR_PROTOCOL=="DISH") {
      DEBUG_PRINTLN("DISH");  
      irsend.sendDISH(uli_HEXCODE, 32);

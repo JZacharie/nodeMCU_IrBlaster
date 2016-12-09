@@ -12,8 +12,7 @@ void callback(char* p_topic, byte* p_payload, unsigned int p_length) {
   int i = 0;
   unsigned long IRcode;
   char message_buff[MQTT_MAX_PACKET_SIZE];
-  // handle the MQTT topic of the received message
-  
+    
   // if recieved a correct topic message.
   if (String(MQTT_SEND_IR).equals(p_topic)) {
     
@@ -52,14 +51,15 @@ void callback(char* p_topic, byte* p_payload, unsigned int p_length) {
          char CHAR_HEXCODE[10];
          STR_HEXCODE.toCharArray(CHAR_HEXCODE,10);
          uli_HEXCODE = strtoul(CHAR_HEXCODE,NULL,16);
+         
          sendIRfromHEX(CHAR_IR_PROTOCOL);
       }
-      delay(100);
+      //delay(10);
     }
   }
 }
 
-void PublishIR() {
+void PublishIR(char MQTT_PAYLOAD[400]) {
     if (mqttClient.publish(MQTT_RECEIVED_IR, MQTT_PAYLOAD, true)) {
       DEBUG_PRINTLN(F("INFO: MQTT message publish succeeded."));
     } else {
@@ -73,7 +73,7 @@ void reconnect() {
       DEBUG_PRINTLN(F("INFO: The client is successfully connected to the MQTT broker"));
     } else {
       DEBUG_PRINTLN(F("ERROR: The connection to the MQTT broker failed"));
-      delay(60);
+      //delay(60);
     }
   }
 
@@ -126,7 +126,7 @@ void setup() {
 
   if (!wifiManager.autoConnect(MQTT_CLIENT_ID)) {
     //ESP.reset();
-    delay(10);
+    //delay(10);
   }
 
   if (shouldSaveConfig) {
@@ -134,7 +134,6 @@ void setup() {
     strcpy(settings.mqttUser,     custom_mqtt_user.getValue());
     strcpy(settings.mqttPassword, custom_mqtt_password.getValue());
     strcpy(settings.mqttPort,     custom_mqtt_port.getValue());
-
     EEPROM.begin(512);
     EEPROM.put(0, settings);
     EEPROM.end();
@@ -157,10 +156,6 @@ void loop() {
  
   decode_results  results;        // Somewhere to store the results
   if (irrecv.decode(&results)) {
-    
-    //dumpInfo(&results);           // Output the results reciev from the IR captor
-    //dumpCode(&results);           // Output the results as source code
-    //DEBUG_PRINTLN("Start Reciving an IR CODE");
     
     String IR_GET_RAW_DATA="";
     for (int i = 1; i < results.rawlen; i++) { 
@@ -187,18 +182,16 @@ void loop() {
         case WHYNTER:      CHAR_GET_IR_PROTOCOL="WHYNTER";       break ;
         case PANASONIC:    CHAR_GET_IR_PROTOCOL="PANASONIC";     break ;
     }
-    
+    char MQTT_PAYLOAD[400] = {0};
     int IR_GET_RAW_DATA_LENGTH=results.rawlen+1;
     String IR_GET_PROTOCOL=String(CHAR_GET_IR_PROTOCOL);
     String JSONRAWDATA="{\"IR_DATA\":\""+ IR_GET_RAW_DATA +"\",\"IR_P\":\""+ IR_GET_PROTOCOL +"\",\"IR_L\":\""+ IR_GET_RAW_DATA_LENGTH +"\" ,\"IR_HEX\":\""+ IR_GET_HEXCODE +"\" }";
-    DEBUG_PRINTLN(JSONRAWDATA);
-    DEBUG_PRINTLN(JSONRAWDATA.length());
     JSONRAWDATA.toCharArray   (MQTT_PAYLOAD,   400);
-    PublishIR();
+    PublishIR(MQTT_PAYLOAD);
     
-    delay(1000); //to Protect from Crash
+    //delay(100); 
     irrecv.resume();                            // Receive the next value
   }
-  delay(100);
+  //delay(100);
   yield();
 }

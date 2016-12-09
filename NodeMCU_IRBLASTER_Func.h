@@ -10,7 +10,7 @@ decode_results results;
 char              MQTT_CLIENT_ID[7]                                 = {0};
 char              MQTT_RECEIVED_IR[STRUCT_CHAR_ARRAY_SIZE]          = {0};
 char              MQTT_SEND_IR[STRUCT_CHAR_ARRAY_SIZE]              = {0};
-char              MQTT_PAYLOAD[400]                                 = {0};
+
 
 // IR Needs
 int               bits;
@@ -228,7 +228,7 @@ void verifyFingerprint() {
 }
 
 void sendIRfromHEX(String CHAR_IR_PROTOCOL){
-  DEBUG_PRINTLN(uli_HEXCODE); 
+  Serial.print(CHAR_IR_PROTOCOL); Serial.print(" : "); Serial.println(uli_HEXCODE, HEX); 
   if (CHAR_IR_PROTOCOL=="DISH") {
      DEBUG_PRINTLN("DISH");  
      irsend.sendDISH(uli_HEXCODE, 32);

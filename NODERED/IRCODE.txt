@@ -9,6 +9,15 @@ http://<noderedsite>/IRSend?irDevice=<DEVICEMAC>&irCode=0x47DFB806 // STOP
 http://<noderedsite>/IRSend?irDevice=<DEVICEMAC>&irCode=0x1E3D4782 // SEEK_FORWARD
 http://<noderedsite>/IRSend?irDevice=<DEVICEMAC>&irCode=0xB53DCEA6 // SEEK_BACKWARD
 http://<noderedsite>/IRSend?irDevice=<DEVICEMAC>&irCode=0x17112D07 // MODE
+---
+0x123CD34B mute
+0x3CEB5F42 repeat
+0xF9F925C3 sound effect
+0xC0CDDA6  sound
+0xBF1BC226 sound control
+0xD65A38A  Btpower
+0x7C101285 woofer
+0xA907B27  autopower
 
 SAMSUNG TV
 
@@ -46,3 +55,13 @@ http://<noderedsite>/IRSend?irDevice=<DEVICEMAC>&irCode=0xE0E0629D // STOP
 http://<noderedsite>/IRSend?irDevice=<DEVICEMAC>&irCode=0xE0E012ED // SEEK_FORWARD
 http://<noderedsite>/IRSend?irDevice=<DEVICEMAC>&irCode=0xE0E0A25D // SEEK_BACKWARD
 
+
+
+Light
+0xCE1972FD ON
+0xD4DD0381 OFF
+0x8503705D Light UP
+0xDEB0C861 Light Down
+0xE85952E1 Red
+0x78CDA4DD Green
+0xA2672345 Blue

@@ -1,8 +1,10 @@
 # NodeMCU Infra Red Blaster
+
 This arduino code allow using nodeMCU as an IRBalster with TLS MQTT
+The main idea is having an WIFI IR Blaster IOT device connecter to your own Broker with a good Security Level.
+This is the first step to allow you using any Infra Red Device @home with IOT commande.
 
 First you need edit the user_config.h with your MQTT broker and the fingerprint of your TLS certificate
-
 const char*       broker      = ""; 
 const char*       fingerprint = "";
 

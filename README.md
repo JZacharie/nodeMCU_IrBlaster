@@ -1,4 +1,4 @@
-# nodeMCU_IrBlaster
+# NodeMCU Infra Red Blaster
 This arduino code allow using nodeMCU as an IRBalster with TLS MQTT
 
 First you need edit the user_config.h with your MQTT broker and the fingerprint of your TLS certificate
